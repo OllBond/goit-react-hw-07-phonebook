@@ -1,7 +1,10 @@
-import { useState } from 'react';
-import { useSelector, useDispatch } from 'react-redux';
-import { addContact } from 'redux/contacts/contacts-slice';
-import { getAllContacts } from 'redux/contacts/contacts-selectors';
+import { useState, useEffect } from 'react';
+import { useDispatch } from 'react-redux';
+
+import {
+  fetchContacts,
+  fetchAddContact,
+} from 'redux/contacts/contacts-operations';
 
 import initialState from './initialState';
 
@@ -9,11 +12,12 @@ import css from './ContactForm.module.css';
 
 const ContactForm = () => {
   const [state, setState] = useState({ ...initialState });
-
-  const allContacts = useSelector(getAllContacts);
   const dispatch = useDispatch();
 
-  // target - це деструктуризація event
+  useEffect(() => {
+    dispatch(fetchContacts());
+  }, [dispatch]);
+
   const handleChange = ({ target }) => {
     const { name, value } = target;
     setState(prevState => {
@@ -21,36 +25,15 @@ const ContactForm = () => {
     });
   };
 
-  const isDublicate = ({ name }) => {
-    const normalizedName = name.toLowerCase();
-    // щоб знайти елемент в масиві
-    // якщо знайщеться в contact буде об'єкт
-    // якщо не здайде - undefind
-    const result = allContacts.find(({ name }) => {
-      return name.toLowerCase() === normalizedName;
-    });
-    // треба повернути або true або false
-    // булеве значення об'єкта - true
-    // булеве значення undefind - false
-    return Boolean(result);
-  };
-
   const handleSubmit = e => {
     e.preventDefault();
 
-    if (isDublicate({ name, number })) {
-      alert(`${name}: ${number} is already in contacts`);
-      return setState({ ...initialState });
-    }
-    // що зробити
-    const action = addContact({ name, number });
-    // dispatch передає action reducer
-    dispatch(action);
+    dispatch(fetchAddContact({ name, phone }));
 
     setState({ ...initialState });
   };
 
-  const { name, number } = state;
+  const { name, phone } = state;
   return (
     <div className={css.wrapper}>
       <div className={css.contactFormBlock}>
@@ -74,10 +57,10 @@ const ContactForm = () => {
             <input
               className={css.input}
               // зв'язок інпуту і state
-              value={number}
+              value={phone}
               onChange={handleChange}
               type="tel"
-              name="number"
+              name="phone"
               pattern="\+?\d{1,4}?[-.\s]?\(?\d{1,3}?\)?[-.\s]?\d{1,4}[-.\s]?\d{1,4}[-.\s]?\d{1,9}"
               title="Phone number must be digits and can contain spaces, dashes, parentheses and can start with +"
               required

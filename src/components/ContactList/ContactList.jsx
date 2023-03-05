@@ -12,8 +12,8 @@ const ContactList = () => {
     <ul className={css.listContact}>
       {
         // mapаємо відфільтровані контакти
-        filteredContacts.map(({ id, name, number }) => {
-          return <ContactItem id={id} key={id} name={name} number={number} />;
+        filteredContacts.map(({ id, name, phone }) => {
+          return <ContactItem id={id} key={id} name={name} number={phone} />;
         })
       }
     </ul>
@@ -32,7 +32,7 @@ ContactList.propTypes = {
     PropTypes.shape({
       id: PropTypes.string.isRequired,
       name: PropTypes.string.isRequired,
-      number: PropTypes.string.isRequired,
+      phone: PropTypes.string.isRequired,
     }).isRequired
   ).isRequired,
 };
